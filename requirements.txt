@@ -5,3 +5,11 @@ python-dotenv==1.0.1
 openai==1.59.2
 pytest==8.3.4
 requests==2.32.3
+
+# ==================== RAG 新增 ====================
+chromadb==1.5.9 # 用于存储向量数据库
+langchain-text-splitters==1.1.2 # 用于文本分割器
+pypdf>=5.0.0 # 用于处理 PDF 文件的库
+docx2txt>=0.8 # 用于处理 docx 文件的库
+filetype>=1.2.0 # 用于判断文件类型库
+# embedding 用已有的 openai 包调 DashScope，不新增依赖

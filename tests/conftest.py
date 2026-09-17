@@ -1,5 +1,5 @@
 import pytest
-
+#名字必须为conftest.py，否则不会被pytest识别
 @pytest.fixture(scope="session")
 def base_url():
     """

@@ -2,30 +2,26 @@
 
 ```
 fastapi-ai-service/
-├── .env                          # 环境变量（DEEPSEEK_API_KEY等）
-├── .gitignore
-├── requirements.txt              # fastapi, uvicorn, python-dotenv, openai
-├── run.py                        # 启动脚本（可选）
-├── logs/                         # 运行时自动生成，存放日志文件
-│   └── app.log
-└── app/
-    ├── __init__.py
-    ├── main.py                   # 应用入口：注册中间件、异常处理器、路由
-    ├── api/
-    │   ├── __init__.py
-    │   └── chat.py               # /ai/chat 路由，调用 AI 客户端，主动抛出 BizException
-    ├── core/
-    │   ├── __init__.py
-    │   ├── config.py             # 配置类（您的版本，支持 DeepSeek/Ollama）
-    │   ├── ai_client.py          # AI 客户端封装（您的版本）
-    │   ├── exceptions.py         # 【新增】自定义业务异常 BizException
-    │   ├── logging_config.py     # 【新增】日志配置（控制台 + 滚动文件）
-    │   ├── exception_handlers.py # 【新增】全局异常处理器
-    │   └── middleware.py         # 【新增】日志拦截中间件
-    └── models/
-        ├── __init__.py
-        ├── schemas.py            # 请求/响应模型（ChatRequest, ChatResponse）
-        └── response.py           # 【新增】统一 API 响应模型 APIResponse
+├── app/
+│   ├── main.py                      # 应用入口：CORS + 全局异常处理器 + ASGI 日志中间件
+│   ├── api/
+│   │   └── chat.py                  # /ai/chat（非流式）与 /ai/chat/stream（SSE 流式）已跑通
+│   ├── core/
+│   │   ├── config.py                # 支持 DeepSeek / Ollama 切换，从 .env 读取 Key
+│   │   ├── ai_client.py             # AsyncOpenAI 封装：chat_with_ai + chat_with_ai_stream
+│   │   ├── exceptions.py            # BizException（业务异常，含 code + message）
+│   │   ├── exception_handlers.py    # 全局异常处理：BizException 返回 200+code，其余 500
+│   │   ├── logging_config.py        # 控制台 + 滚动文件日志
+│   │   └── middleware.py            # 纯 ASGI 日志中间件（不缓冲 StreamingResponse）
+│   └── models/
+│       ├── schemas.py               # ChatRequest / ChatResponse
+│       └── response.py              # 统一响应 APIResponse{code,message,data}
+├── tests/                           # pytest，覆盖 7 种场景                    # 流式测试页（前端）
+├── logs/app.log
+├── .env      # DEEPSEEK_API_KEY / OLLAMA_BASE_URL / AI_SERVICE_TYPE
+├──PLAN.md   # 项目文档
+└──requirements.txt
+
 ```
 
 # 项目启动

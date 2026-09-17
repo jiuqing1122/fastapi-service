@@ -9,6 +9,12 @@ if settings.AI_SERVICE_TYPE == "ollama":
         base_url=settings.OLLAMA_BASE_URL
     )
     current_model = settings.OLLAMA_MODEL
+elif settings.AI_SERVICE_TYPE == "qwen":
+    client = AsyncOpenAI(
+        api_key=settings.AliQwen_API_KEY,
+        base_url=settings.QWEN_BASE_URL
+    )
+    current_model = settings.QWEN_MODEL
 else:
     # 默认使用 DeepSeek
     client = AsyncOpenAI(
@@ -47,7 +53,10 @@ async def chat_with_ai_stream(prompt: str):
 
     # 异步迭代响应块
     async for chunk in stream:
-        # 提取增量内容，注意：chunk.choices[0].delta.content 可能为 None
+        # 先检查 choices 是否为空，防止索引越界
+        if not chunk.choices:
+            continue
+        
         delta = chunk.choices[0].delta.content
         if delta:
             yield delta
