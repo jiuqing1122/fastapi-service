@@ -48,6 +48,7 @@ def embed_texts(texts: list) -> list:
     for start in range(0, len(texts), batch_size):
         batch = texts[start:start + batch_size]
         try:
+            # 调用 DashScope API 向量化
             resp = client.embeddings.create(
                 model=settings.EMBEDDING_MODEL,
                 input=batch,

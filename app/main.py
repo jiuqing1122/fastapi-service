@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.api import chat
+from app.api import chat, rag
 from app.core.logging_config import setup_logging
 from app.core.exception_handlers import biz_exception_handler,global_exception_handler
 from app.core.exceptions import BizException
@@ -33,6 +33,7 @@ app.add_exception_handler(Exception, global_exception_handler)
 
 # 注册路由
 app.include_router(chat.router)
+app.include_router(rag.router)
 
 # 根路由，返回服务状态
 @app.get("/")
