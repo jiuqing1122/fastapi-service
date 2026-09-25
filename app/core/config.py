@@ -54,7 +54,7 @@ class Settings:
 
     def validate(self) ->None:
         """
-        启动期校验配置；不合法直接抛错，避免运行期才炸。
+        启动期校验配置；不合法直接抛错，避免运行期报错。
         注意：判断空值必须用 .strip()，因为 .env 里 `KEY=` 返回的是空字符串不是 None。
         """
         if self.AI_SERVICE_TYPE == "qwen" and not self.AliQwen_API_KEY.strip():

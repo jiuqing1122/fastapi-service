@@ -7,6 +7,7 @@ RAG 相关接口：
 （问答接口在第 3 步加）
 """
 import asyncio
+import json
 import logging
 import os
 import re
@@ -16,13 +17,15 @@ from datetime import datetime
 
 import filetype
 from fastapi import APIRouter, UploadFile, File, Query
+from starlette.responses import StreamingResponse
 
 from app.core.config import settings
 from app.core.exceptions import BizException
-from app.core.rag import vector_store, storage
+from app.core.rag import vector_store, storage, qa
 from app.core.rag.embedding import embed_texts
 from app.core.rag.loader import load_document
 from app.core.rag.splitter import split_pages
+from app.models.rag_schemas import RagChatRequest
 from app.models.response import APIResponse
 
 logger = logging.getLogger(__name__)
@@ -182,6 +185,7 @@ def _process_upload(filename: str, content_type: str, data: bytes) -> dict:
         if saved:
             shutil.rmtree(doc_dir, ignore_errors=True) #递归删除目录，忽略错误
         try:
+            #删除向量
             vector_store.delete_by_doc(doc_id)
         except Exception as e:
             logger.warning("回滚向量失败 | doc_id=%s | err=%s", doc_id, e)
@@ -254,4 +258,61 @@ async def delete_document(doc_id: str):
         code=200,
         message="success" if existed else "文档不存在（幂等返回）",
         data={"doc_id": doc_id, "existed": existed}
+    )
+
+#=======问答接口=======
+@router.post("/chat")
+async def rag_chat(request: RagChatRequest):
+    """
+    RAG 非流式问答
+    - 问题为空 -> 40001
+    - 检索无结果 -> 40002
+    - 正常 -> 200 + {answer, sources}
+    """
+    if not request.question or not request.question.strip():
+        raise BizException(code=40001, message="问题不能为空")
+
+    answer, sources = await qa.answer(request.question)
+    if not sources:
+        raise BizException(code=40002, message="检索无结果")
+
+    return APIResponse(
+        code=200,
+        message="success",
+        data={"answer": answer, "sources": sources},
+    )
+
+@router.post("/chat/stream")
+async def rag_chat_stream(request: RagChatRequest):
+    """
+    RAG 流式问答（SSE）。
+    事件顺序：sources → message... → done
+    - 请求体校验失败：流开始前返回非 200 业务异常 JSON
+    - 流中异常：发 event: error 后立即关流，HTTP 状态码保持 200（流已开始不能改状态码）
+    """
+    # 1. 流开始前校验（此时还能改状态码，走全局异常处理器返回 200 + 业务码）
+    if not request.question or not request.question.strip():
+        raise BizException(code=40001, message="问题不能为空")
+
+    question = request.question.strip()
+
+    async def event_generator():
+        try:
+            async for item in qa.answer_stream(question):
+                data_json = json.dumps(item["data"], ensure_ascii=False)
+                yield f"event: {item["event"]}\ndata: {data_json}\n\n"
+        except Exception as e:
+            # 保底：answer_stream 内部已 try/except，这里只兜住"发出去之前"的极端异常
+            logger.error("RAG SSE 生成异常 | question=%s | err=%s", question, e, exc_info=True)
+            err = json.dumps({"type": "error", "code": 500, "message": "服务内部错误"}, ensure_ascii=False)
+            yield f"event: error\ndata: {err}\n\n"
+            yield f"event: done\ndata: {json.dumps({'type': 'done'}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",# 防止 Nginx 类代理缓冲；本地开发无害
+        }
     )

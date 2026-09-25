@@ -63,6 +63,18 @@ def embed_texts(texts: list) -> list:
             )
 
         # 按 index 排序，确保向量和入参文本顺序严格一致
+        # resp.data = [
+        #     EmbeddingObject(embedding=[0.0123, -0.0456, ...], index=5),
+        #     EmbeddingObject(embedding=[0.0345, 0.0678, ...], index=0),
+        #     EmbeddingObject(embedding=[0.0567, -0.0890, ...], index=3),
+        # ]
+        # items = [
+        #     EmbeddingObject(embedding=[0.0345, 0.0678, ...], index=0),  # 对应第1个文本
+        #     EmbeddingObject(embedding=[...], index=1),  # 对应第2个文本
+        #     EmbeddingObject(embedding=[0.0567, -0.0890, ...], index=3),  # 对应第4个文本
+        #     EmbeddingObject(embedding=[...], index=4),  # 对应第5个文本
+        #     EmbeddingObject(embedding=[0.0123, -0.0456, ...], index=5),  # 对应第6个文本
+        # ]
         items = sorted(resp.data, key=lambda x: x.index)
         if len(items) != len(batch):
             raise BizException(
@@ -70,5 +82,11 @@ def embed_texts(texts: list) -> list:
                 message=f"Embedding 返回条数不匹配：请求 {len(batch)} 条，返回 {len(items)} 条",
             )
         #生成器表达式（Generator Expression），遍历 items 里的每个 EmbeddingObject，只取出它的 .embedding 属性
+        # all_embeddings = [
+        #     [0.0345, 0.0678, ...],  # texts[0] 的向量
+        #     [0.0789, -0.0123, ...],  # texts[1] 的向量
+        #     ...
+        #     [0.0567, -0.0890, ...],  # texts[24] 的向量
+        # ]
         all_embeddings.extend(item.embedding for item in items)
     return all_embeddings

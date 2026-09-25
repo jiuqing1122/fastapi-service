@@ -12,7 +12,7 @@ setup_logging()
 app = FastAPI(
     title="AI Microservice",
     version="1.0",
-    description="一个简单的 AI 网关服务，集成 DeepSeek"
+    description="一个简单的 AI 网关服务，集成 DeepSeek和Qwen模型和 RAG 功能",
 )
 
 # 注册中间件（先于异常处理器，但异常最终会进入处理器）
