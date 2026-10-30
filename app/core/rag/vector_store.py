@@ -107,6 +107,28 @@ def query(question_embedding: list, top_k: int = 5) -> list:
 
     return hits
 
+def get_all_chunks() -> list:
+    """
+    返回 collection 内全部 chunk，供 BM25 建索引 / 标注导出使用。
+    :return: [{"id", "doc_id", "chunk", "metadata"}, ...]
+    """
+    collection = _get_collection()
+    result = collection.get(include=["documents", "metadatas"])
+    ids = result.get("ids") or []
+    documents = result.get("documents") or []
+    metadatas = result.get("metadatas") or []
+
+    hits = []
+    for i, chunk_id in enumerate(ids):
+        meta = metadatas[i] if i < len(metadatas) else {}
+        hits.append({
+            "id": chunk_id,
+            "doc_id": (meta or {}).get("doc_id"),
+            "chunk": documents[i] if i < len(documents) else "",
+            "metadata": meta or {},
+        })
+    return hits
+
 def delete_by_doc(doc_id: str) -> None:
     """删除某个 doc 的所有 chunk；不存在时静默通过（幂等）"""
     collection = _get_collection()

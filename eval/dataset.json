@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "created_at": "2026-10-29",
+  "frozen_at": "2026-10-29",
+  "corpus_manifest_sha256": "b2004dcf793c42cc58ffbee8f932eee426e294cc874da754a929d087e62ff651",
+  "corpus": [
+    {
+      "doc_id": "cfd68a97b42d466aad0adb0afebb18a9",
+      "filename": "rag_test.txt"
+    },
+    {
+      "doc_id": "b99923b9deed4d2db1ad9dc233d8a922",
+      "filename": "中华人民共和国劳动法_其他文件_首都之窗_北京市人民政府门户网站.pdf"
+    },
+    {
+      "doc_id": "64a380c38ca74ce0b8de02b072edb171",
+      "filename": "企业职工带薪年休假实施办法_人力资源和社会保障部_中国政府网.pdf"
+    },
+    {
+      "doc_id": "974fa004518b4866b46ec11d25ba8871",
+      "filename": "制度.pdf"
+    },
+    {
+      "doc_id": "2a1ca15f03db4c54806d572f7eb44a28",
+      "filename": "劳动争议调解仲裁法.docx"
+    },
+    {
+      "doc_id": "465d68e0cb7845658646916d0baed30d",
+      "filename": "劳动合同法.docx"
+    },
+    {
+      "doc_id": "dc81dde5f20546a68390b6842d11d34a",
+      "filename": "员工手册.docx"
+    },
+    {
+      "doc_id": "57fa94c845a7401a91e6a096914017f7",
+      "filename": "女职工劳动保护特别规定.docx"
+    },
+    {
+      "doc_id": "609e8111e8964b5896d6f86216d5189f",
+      "filename": "工伤保险条例.docx"
+    },
+    {
+      "doc_id": "aee896b1d95748599c7b0e586e44831a",
+      "filename": "工资支付暂行规定_人力资源和社会保障部_中国政府网.pdf"
+    },
+    {
+      "doc_id": "5375dc31f145451e9300a40d5853a624",
+      "filename": "社会保险法.pdf"
+    },
+    {
+      "doc_id": "108997b34d814dacad281234029ddb14",
+      "filename": "职工带薪年休假条例_国务院文件_中国政府网.pdf"
+    }
+  ],
+  "items": [
+    {
+      "id": "q001",
+      "type": "term",
+      "question": "职工累计工作满1年不满10年、满10年不满20年、满20年，年休假分别是几天？",
+      "relevant_chunk_ids": [
+        "108997b34d814dacad281234029ddb14_0"
+      ],
+      "notes": "《职工带薪年休假条例》第三条：5天/10天/15天"
+    },
+    {
+      "id": "q002",
+      "type": "term",
+      "question": "劳动争议申请仲裁的时效期间是多少？",
+      "relevant_chunk_ids": [
+        "2a1ca15f03db4c54806d572f7eb44a28_3"
+      ],
+      "notes": "《劳动争议调解仲裁法》第二十七条：一年"
+    },
+    {
+      "id": "q003",
+      "type": "term",
+      "question": "工伤保险基金由哪些部分组成？",
+      "relevant_chunk_ids": [
+        "609e8111e8964b5896d6f86216d5189f_0"
+      ],
+      "notes": "《工伤保险条例》第七条：用人单位缴纳的工伤保险费、基金利息、依法纳入的其他资金"
+    },
+    {
+      "id": "q004",
+      "type": "term",
+      "question": "劳动合同期限一年以上不满三年的，试用期最长不得超过多久？",
+      "relevant_chunk_ids": [
+        "465d68e0cb7845658646916d0baed30d_3"
+      ],
+      "notes": "《劳动合同法》第十九条：不得超过二个月"
+    },
+    {
+      "id": "q005",
+      "type": "cross_page",
+      "question": "职工年休假天数怎么确定？未休年假工资按什么标准支付？",
+      "relevant_chunk_ids": [
+        "108997b34d814dacad281234029ddb14_0",
+        "108997b34d814dacad281234029ddb14_1"
+      ],
+      "notes": "条例第三条定天数；条例第五条定300%工资"
+    },
+    {
+      "id": "q006",
+      "type": "cross_page",
+      "question": "提出工伤认定申请需要提交哪些材料？社会保险行政部门多久作出工伤认定决定？",
+      "relevant_chunk_ids": [
+        "609e8111e8964b5896d6f86216d5189f_3",
+        "609e8111e8964b5896d6f86216d5189f_4"
+      ],
+      "notes": "第十八条材料在 _3；第二十条60日/15日决定在 _4"
+    },
+    {
+      "id": "q007",
+      "type": "cross_page",
+      "question": "劳动合同期限一年以上不满三年的，试用期最长多久？试用期内劳动者离职要提前几天通知？",
+      "relevant_chunk_ids": [
+        "465d68e0cb7845658646916d0baed30d_3",
+        "465d68e0cb7845658646916d0baed30d_5"
+      ],
+      "notes": "第十九条试用期在 _3；第三十七条试用期提前三日通知在 _5"
+    },
+    {
+      "id": "q008",
+      "type": "paraphrase",
+      "question": "已经连续工作满12个月，刚跳槽到新公司，当年还能休年假吗？能休几天？",
+      "relevant_chunk_ids": [
+        "64a380c38ca74ce0b8de02b072edb171_0"
+      ],
+      "notes": "《企业职工带薪年休假实施办法》第三条、第五条：新进单位按剩余日历天数折算"
+    },
+    {
+      "id": "q009",
+      "type": "paraphrase",
+      "question": "公司既不安排年休假，也不支付未休年假工资，会有什么后果？",
+      "relevant_chunk_ids": [
+        "108997b34d814dacad281234029ddb14_1",
+        "64a380c38ca74ce0b8de02b072edb171_3"
+      ],
+      "notes": "条例第七条、实施办法第十五条：责令改正、加付赔偿金"
+    },
+    {
+      "id": "q010",
+      "type": "paraphrase",
+      "question": "上班路上被车撞了，算工伤吗？",
+      "relevant_chunk_ids": [
+        "609e8111e8964b5896d6f86216d5189f_2"
+      ],
+      "notes": "《工伤保险条例》第十四条第六项：上下班途中，非本人主要责任的交通事故算工伤"
+    }
+  ]
+}

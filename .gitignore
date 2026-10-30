@@ -71,3 +71,13 @@ Thumbs.db
 *.pt
 *.pth
 *.onnx
+
+# 运行时数据（上传文件、向量库、文档元数据）
+data/
+
+# 标注导出（由 tools/list_chunks.py 生成，可重建）
+eval/chunks.json
+
+# 标注草稿（人工确认后合并到 dataset.json）
+eval/dataset_draft.json
+eval/dataset_draft.md

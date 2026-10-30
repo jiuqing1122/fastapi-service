@@ -64,6 +64,26 @@ def _sanitize_filename(name: str) -> str:
     name = name[:200]  # 截断，避免路径过长
     return name or "unnamed"
 
+def _normalize_filename(name: str) -> str:
+    """
+    multipart 解析器可能按 latin-1 解码文件名（Windows/curl 发 GBK 时尤其明显）。
+    尝试还原成 UTF-8 / GBK；已经是正常 Unicode 的原样返回。
+    """
+    try:
+        raw = name.encode("latin-1")
+    except UnicodeEncodeError:
+        return name
+
+    for enc in ("utf-8", "gbk"):
+        try:
+            fixed = raw.decode(enc)
+        except UnicodeDecodeError:
+            continue
+        # 只在确实还原出非 ASCII 字符时采用，避免误伤普通文件名
+        if any(ord(ch) > 127 for ch in fixed):
+            return fixed
+    return name
+
 def _validate_upload(filename: str, content_type: str, data: bytes) -> str:
     """
     所有上传校验集中在这。通过返回扩展名；失败抛 BizException。
@@ -126,6 +146,7 @@ def _process_upload(filename: str, content_type: str, data: bytes) -> dict:
     校验 → 落盘 → 加载 → 切分 → 向量化 → 存 → 元数据
     任一步失败都回滚：删文件、删向量、删元数据
     """
+    filename = _normalize_filename(filename)
     ext = _validate_upload(filename, content_type, data)
     doc_id = uuid.uuid4().hex#hex 去除 - 号，生成唯一文档ID
     safe_name = _sanitize_filename(filename)#安全文件名
