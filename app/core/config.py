@@ -52,11 +52,22 @@ class Settings:
     RAG_CHUNK_OVERLAP: int = int(os.getenv("RAG_CHUNK_OVERLAP", "100"))# 文档分块重叠大小
     MAX_UPLOAD_MB: int = int(os.getenv("MAX_UPLOAD_MB", "20"))# 最大上传文件大小（MB）
 
+    # ==================== 检索策略（论文实验）====================
+    RAG_STRATEGY: str = os.getenv("RAG_STRATEGY", "vector")  # vector | hybrid | hybrid_rerank
+    RAG_RECALL_K: int = int(os.getenv("RAG_RECALL_K", "50"))  # 单路召回条数
+    RRF_K: int = int(os.getenv("RRF_K", "60"))                # 加权 RRF 常数
+    RRF_WEIGHT_VECTOR: float = float(os.getenv("RRF_WEIGHT_VECTOR", "0.5"))
+    RRF_WEIGHT_BM25: float = float(os.getenv("RRF_WEIGHT_BM25", "0.5"))
+    RERANK_TOP_N: int = int(os.getenv("RERANK_TOP_N", "20"))  # RRF 后送精排的候选数
+    RERANK_MODEL: str = os.getenv("RERANK_MODEL", "gte-rerank-v2")
+
     def validate(self) ->None:
         """
         启动期校验配置；不合法直接抛错，避免运行期报错。
         注意：判断空值必须用 .strip()，因为 .env 里 `KEY=` 返回的是空字符串不是 None。
         """
+        if self.RAG_STRATEGY not in ("vector", "hybrid", "hybrid_rerank"):
+            raise ValueError("RAG_STRATEGY 只能是 vector / hybrid / hybrid_rerank")
         if self.AI_SERVICE_TYPE == "qwen" and not self.AliQwen_API_KEY.strip():
             raise ValueError("使用 qwen 时，AliQwen_API_KEY 必须在环境变量中")
         if self.AI_SERVICE_TYPE == "deepseek" and not self.DEEPSEEK_API_KEY.strip():

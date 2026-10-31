@@ -98,6 +98,7 @@ def query(question_embedding: list, top_k: int = 5) -> list:
         # distance 可能是 numpy.float32，转成原生 float 方便后续 JSON 序列化
         distance = float(distances[i])
         hits.append({
+            "id": ids[0][i],  # chunk 主键，供 BM25 / RRF 融合对齐
             "doc_id": metadatas[i].get("doc_id"),
             "chunk": documents[i],
             "distance": distance,

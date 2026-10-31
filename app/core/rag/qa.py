@@ -18,12 +18,11 @@ logger = logging.getLogger(__name__)
 #======检索======
 def retrieve(question: str, top_k: int | None = None) -> list:
     """
-    问题向量化 + Chroma 检索。
-    返回：[{"doc_id","chunk","distance","similarity","metadata"}, ...]
+    按 RAG_STRATEGY 分派检索（默认 vector，行为与改造前一致）。
+    返回：[{"id","doc_id","chunk","distance","similarity","metadata"}, ...]
     """
-    top_k = top_k or settings.RAG_TOP_K
-    q_embed = embed_texts([question])
-    return vector_store.query(q_embed[0], top_k=top_k)
+    from app.core.rag.retrieval import retrieve_by_strategy
+    return retrieve_by_strategy(question, top_k=top_k)
 
 #======拼 prompt======
 _SYSTEM_PROMPT = """你是一个严谨的知识库助手。请严格遵守以下规则：
